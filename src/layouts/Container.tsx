@@ -10,7 +10,7 @@ type ContainerProps = {
 export default function Container({
     children,
     className,
-    withPadding = true,
+    // withPadding = true,
     ...props
 }: ContainerProps) {
     return (
