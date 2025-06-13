@@ -2,15 +2,15 @@
 import axios, { AxiosResponse, AxiosError } from 'axios';
 // import { getToken } from '@/lib/cookie';
 
-const api = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_MUSLIM_API_URL,
+const apiQuran = axios.create({
+  baseURL: process.env.NEXT_PUBLIC_QURAN_API_URL,
   timeout: 10000,
   headers: {
     'Content-Type': 'application/json',
   },
 });
 
-api.interceptors.request.use(
+apiQuran.interceptors.request.use(
   (config) => {
     // const token = getToken("renimo_token"); 
     // if (token) {
@@ -25,7 +25,7 @@ api.interceptors.request.use(
   }
 );
 
-api.interceptors.response.use(
+apiQuran.interceptors.response.use(
   (response: AxiosResponse) => response,
   (error: AxiosError) => {
     if (error.response) {
@@ -44,4 +44,4 @@ api.interceptors.response.use(
   }
 );
 
-export default api;
+export default apiQuran;

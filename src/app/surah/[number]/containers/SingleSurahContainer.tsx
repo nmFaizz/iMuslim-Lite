@@ -1,6 +1,6 @@
 "use client";
 import MainLayout from "@/layouts/MainLayout";
-import api from "@/lib/api";
+import apiQuran from "@/lib/apiQuran";
 import { 
     Ayat, 
     SingleSurahResponse, 
@@ -17,7 +17,7 @@ export default function SingleSurahContainer({
     const { data: surah } = useQuery<SurahDetail>({
         queryKey: ['surah', number],
         queryFn: async () => {
-            const response = await api.get<SingleSurahResponse>(`/v2/surat/${number}`);
+            const response = await apiQuran.get<SingleSurahResponse>(`/v2/surat/${number}`);
             return response.data.data;
         },
     })

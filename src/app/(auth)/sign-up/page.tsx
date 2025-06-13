@@ -1,25 +1,27 @@
 "use client";
-import Link from 'next/link';
-import { FormProvider, SubmitHandler, useForm } from 'react-hook-form';
-import { useMutation } from '@tanstack/react-query';
-import { useRouter } from 'next/navigation';
-import { toast } from 'sonner';
+import { toast } from "sonner";
+import { Loader2Icon } from "lucide-react";
+import Link from "next/link";
 
-import MainLayout from '@/layouts/MainLayout';
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
-import { supabase } from '@/lib/supabase';
-import { Loader2Icon } from 'lucide-react';
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import MainLayout from "@/layouts/MainLayout";
+import { supabase } from "@/lib/supabase";
+import { useMutation } from "@tanstack/react-query";
+import { useRouter } from "next/navigation";
+import { FormProvider, SubmitHandler, useForm } from "react-hook-form";
 
-type LoginFormValues = {
+type SignUpFormValues = {
+    username: string;
     email: string;
     password: string;
 }
 
-export default function LoginPage() {
-    const methods = useForm<LoginFormValues>({
+export default function SignUpPage() {
+    const methods = useForm<SignUpFormValues>({
         mode: 'onBlur',
         defaultValues: {
+            username: '',
             email: '',
             password: ''
         }
@@ -28,11 +30,11 @@ export default function LoginPage() {
     
     const router = useRouter();
 
-    const { isPending, mutate } = useMutation<void, Error, LoginFormValues>({
-        mutationFn: async (data: LoginFormValues) => {
-            const { error } = await supabase.auth.signInWithPassword({
+    const { isPending, mutate } = useMutation<void, Error, SignUpFormValues>({
+        mutationFn: async (data: SignUpFormValues) => {
+            const { error } = await supabase.auth.signUp({
                 email: data.email,
-                password: data.password
+                password: data.password,
             });
 
             if (error) {
@@ -40,15 +42,15 @@ export default function LoginPage() {
             }
         },
         onError: (error) => {
-            toast.error(error.message);
+            toast.success(error.message);
         },
         onSuccess: () => {
-            toast.success('Login berhasil');
-            router.push('/');
+            toast('Sign Up berhasil');
+            router.push('/login');
         }
     })
 
-    const onSubmit: SubmitHandler<LoginFormValues> = (data) => {
+    const onSubmit: SubmitHandler<SignUpFormValues> = (data) => {
         mutate(data);
     }
 
@@ -60,9 +62,9 @@ export default function LoginPage() {
             <div className='py-24'>
                 <div className='mb-12'>
                     <h1 className='md:text-3xl font-semibold'>
-                        Login
+                        Sign Up
                     </h1>
-                    <p className='mt-2 text-muted-foreground'>Login untuk melanjutkan</p>
+                    <p className='mt-2 text-muted-foreground'>Sign Up untuk membuat akun baru</p>
                 </div>
                 
                 <FormProvider {...methods}>
@@ -70,6 +72,27 @@ export default function LoginPage() {
                         onSubmit={handleSubmit(onSubmit)}
                         className='space-y-5'
                     >
+                        <Input 
+                            id='username'
+                            type='text'
+                            label='Username'
+                            placeholder='cth: johndoe_'
+                            validation={{
+                                required: 'Username wajib diisi',
+                                minLength: {
+                                    value: 3,
+                                    message: 'Username minimal 3 karakter'
+                                },
+                                maxLength: {
+                                    value: 20,
+                                    message: 'Username maksimal 20 karakter'
+                                },
+                                pattern: {
+                                    value: /^[a-zA-Z0-9_]+$/,
+                                    message: 'Username hanya boleh huruf, angka, dan underscore'
+                                }
+                            }}
+                        />
                         <Input 
                             id='email'
                             type='email'
@@ -79,7 +102,7 @@ export default function LoginPage() {
                                 required: 'Email wajib diisi',
                                 pattern: {
                                     value: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
-                                    message: 'Invalid email address'
+                                    message: 'Alamat email tidak valid'
                                 }
                             }}
                         />
@@ -92,7 +115,7 @@ export default function LoginPage() {
                                 required: 'Password wajib diisi',
                                 minLength: {
                                     value: 6,
-                                    message: 'Password must be at least 6 characters long'
+                                    message: 'Password minimal 6 karakter'
                                 }
                             }}
                         />
@@ -101,7 +124,7 @@ export default function LoginPage() {
                             type='submit' 
                             className='w-full mt-5'
                         >
-                            Login
+                            Sign Up
                             {isPending && (
                                 <Loader2Icon className='animate-spin' />
                             )}
@@ -109,9 +132,9 @@ export default function LoginPage() {
 
                         <div>
                             <p className='text-center text-sm text-muted-foreground'>
-                                Belum Punya Akun?
+                                Sudah Punya Akun?
                                 <Link href="/sign-up" className='ml-1 text-primary underline'>
-                                    SignUp
+                                    Login
                                 </Link>
                             </p>
                         </div>

@@ -1,14 +1,14 @@
 "use client"
 import { useQuery } from "@tanstack/react-query"
-import api from "@/lib/api"
 import { Surah, AllSurahResponse } from "@/types/surah"
 import Link from "next/link"
+import apiQuran from "@/lib/apiQuran"
 
 export default function ListSurah() {
     const { data } = useQuery<Surah[]>({
         queryKey: ['list-surah'],
         queryFn: async () => {
-            const res = await api.get<AllSurahResponse>("/v2/surat")
+            const res = await apiQuran.get<AllSurahResponse>("/v2/surat")
             return res.data.data
         }
     })

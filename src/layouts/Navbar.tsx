@@ -21,9 +21,11 @@ export default function Navbar() {
             </Link>
 
             <div className="flex items-center">
-                <Button variant="secondary">
-                    Sign In
-                </Button>
+                <Link href="/login">
+                    <Button variant="secondary">
+                        Sign In
+                    </Button>
+                </Link>
 
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
