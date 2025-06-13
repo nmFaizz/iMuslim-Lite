@@ -4,12 +4,12 @@ import { FormProvider, SubmitHandler, useForm } from 'react-hook-form';
 import { useMutation } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
+import { Loader2Icon } from 'lucide-react';
 
 import MainLayout from '@/layouts/MainLayout';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { supabase } from '@/lib/supabase';
-import { Loader2Icon } from 'lucide-react';
 
 type LoginFormValues = {
     email: string;

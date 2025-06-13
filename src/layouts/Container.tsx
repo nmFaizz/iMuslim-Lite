@@ -14,11 +14,15 @@ export default function Container({
     ...props
 }: ContainerProps) {
     return (
-        <div className={cn(
-            className,
-            "w-full px-4"
-        )}>
-
+        <div 
+            className={cn(
+                className,
+                "p-5 rounded-lg",
+                "border border-muted-foreground/20",
+            )}
+            {...props}
+        >
+            {children}
         </div>
     )
 }

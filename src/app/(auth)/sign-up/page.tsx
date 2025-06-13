@@ -106,6 +106,7 @@ export default function SignUpPage() {
                                 }
                             }}
                         />
+                        
                         <Input 
                             id='password'
                             type='password'
