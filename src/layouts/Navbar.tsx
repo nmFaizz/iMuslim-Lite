@@ -1,7 +1,7 @@
 "use client"
 import Link from "next/link"
 import { useTheme } from "next-themes"
-import { Sun, Moon } from "lucide-react"
+import { Sun, Moon, Loader2Icon } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import {
@@ -10,9 +10,39 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import { supabase } from "@/lib/supabase"
+import { useMutation, useQuery } from "@tanstack/react-query"
+import { useRouter } from "next/navigation"
+import { toast } from "sonner"
 
 export default function Navbar() {
     const { setTheme } = useTheme() 
+
+    const { data: session } = useQuery({
+        queryKey: ['session'],
+        queryFn: async () => {
+            const { data } = await supabase.auth.getSession()
+            return data.session
+        },
+    })
+
+    const router = useRouter()
+
+    const { isPending, mutate } = useMutation({
+        mutationFn: async () => {
+            const { error } = await supabase.auth.signOut()
+
+            if (error) {
+                throw new Error(error.message)
+            }
+        },
+        onSuccess: () => {
+            router.push('/login')
+        },
+        onError: (error) => {
+            toast.error(error.message)
+        }
+    })
 
     return (
         <header className="sticky border-b border-input top-0 z-50 bg-background center-xl py-5 flex items-center justify-between">
@@ -21,11 +51,23 @@ export default function Navbar() {
             </Link>
 
             <div className="flex items-center">
-                <Link href="/login">
-                    <Button variant="secondary">
-                        Sign In
+                {!session ? (
+                    <Link href="/login">
+                        <Button variant="secondary">
+                            Sign In
+                        </Button>
+                    </Link>
+                ) : (
+                    <Button 
+                        variant="secondary"
+                        onClick={() => mutate()}
+                    >
+                        {isPending && (
+                            <Loader2Icon className="animate-spin" />
+                        )}
+                        Logout
                     </Button>
-                </Link>
+                )}
 
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>

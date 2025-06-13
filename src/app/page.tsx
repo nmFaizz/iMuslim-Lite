@@ -1,5 +1,6 @@
 import JadwalSholat from "@/components/home/JadwalSholat";
 import ListSurah from "@/components/home/ListSurah";
+import RandomDoa from "@/components/home/RandomDoa";
 import MainLayout from "@/layouts/MainLayout";
 
 export default function PageHome() {
@@ -9,6 +10,7 @@ export default function PageHome() {
       withNavbar
     >
       <JadwalSholat />
+      <RandomDoa />
       <ListSurah />
     </MainLayout>
   );

@@ -2,6 +2,11 @@
 import { toast } from "sonner";
 import { Loader2Icon } from "lucide-react";
 import Link from "next/link";
+import { 
+    FormProvider, 
+    SubmitHandler, 
+    useForm 
+} from "react-hook-form";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -9,7 +14,6 @@ import MainLayout from "@/layouts/MainLayout";
 import { supabase } from "@/lib/supabase";
 import { useMutation } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
-import { FormProvider, SubmitHandler, useForm } from "react-hook-form";
 
 type SignUpFormValues = {
     username: string;
@@ -106,7 +110,7 @@ export default function SignUpPage() {
                                 }
                             }}
                         />
-                        
+
                         <Input 
                             id='password'
                             type='password'
