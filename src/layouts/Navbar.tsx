@@ -26,7 +26,11 @@ export default function Navbar() {
                         Sign In
                     </Button>
                 </Link>
-
+                <Link href="/doa" className="ml-2">
+                    <Button variant="secondary">
+                        Doa
+                    </Button>
+                </Link>
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                         <Button variant="outline" size="icon" className="ml-2">
