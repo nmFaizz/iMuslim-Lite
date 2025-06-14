@@ -3,7 +3,7 @@ import axios, { AxiosResponse, AxiosError } from 'axios';
 // import { getToken } from '@/lib/cookie';
 
 const apiMuslim = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_QURAN_API_URL,
+  baseURL: process.env.NEXT_PUBLIC_MUSLIM_API_URL,
   timeout: 10000,
   headers: {
     'Content-Type': 'application/json',
@@ -43,19 +43,6 @@ apiMuslim.interceptors.response.use(
     return Promise.reject(error);
   }
 );
-
-export const getListSumberDoa = async () => {
-  const response = await apiMuslim.get("/v2/doa/sumber");
-  return response.data;
-};
-
-export const getDoaBySumber = async (sumber: string) => {
-  const response = await apiMuslim.get(`/v2/doa/${sumber}`);
-  return {
-    sumber,
-    list: response.data.data // asumsi struktur response ada di response.data.data
-  };
-};
 
 
 export default apiMuslim;

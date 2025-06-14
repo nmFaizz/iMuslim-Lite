@@ -10,9 +10,10 @@
 // src/pages/DoaPage.tsx
 
 'use client';
-
+import MainLayout from '@/layouts/MainLayout';
 import { useEffect, useState } from 'react';
 import { getDoaBySumber } from '@/services/doa';
+import { Main } from 'next/document';
 
 const sumberList = [
   { label: "Quran", value: "quran" },
@@ -26,12 +27,10 @@ const sumberList = [
 
 
 interface DoaItem {
-  doa: string;
-  ayat: string;
-  latin: string;
-  artinya: string;
-  grup: string;
-  riwayat?: string;
+  arab : string;
+  indo : string;
+  judul : string;
+  source : string;
 }
 
 export default function DoaPage() {
@@ -45,20 +44,17 @@ export default function DoaPage() {
       const data = await getDoaBySumber(selectedSumber);
       setDoaList(data);
 
-      const grupSet = new Set(data.map((doa: DoaItem) => doa.grup));
-      const grupArray = Array.from(grupSet).filter((grup): grup is string => typeof grup === 'string');
 
-      setUniqueGrupList(grupArray);
-      setSelectedGrup(grupArray[0] || '');
     };
 
     fetchDoa();
   }, [selectedSumber]);
 
   return (
-    <div className="p-4">
+    <MainLayout withNavbar containerSize="1200">
+      <div className="p-4">
       <h1 className="text-xl font-bold mb-4">Daftar Doa Berdasarkan Sumber & Grup</h1>
-
+      <h2 className="text-lg mb-2">Pilih Sumber Doa:</h2>
       <div className="flex flex-col md:flex-row gap-4">
         <select
         value={selectedSumber}
@@ -70,39 +66,25 @@ export default function DoaPage() {
           {label}
           </option>
         ))}
-        </select>
+        </select> 
 
-        {uniqueGrupList.length > 0 && (
-          <select
-            value={selectedGrup}
-            onChange={(e) => setSelectedGrup(e.target.value)}
-            className="p-2 border rounded"
-          >
-            {uniqueGrupList.map((grup, idx) => (
-              <option key={idx} value={grup}>
-                {grup}
-              </option>
-            ))}
-          </select>
-        )}
+
       </div>
-
       <ul className="mt-6 space-y-4">
         {doaList
-          .filter((doa) => doa.grup === selectedGrup)
           .map((doa, idx) => (
             <li key={idx} className="border p-4 rounded shadow">
-              <p className="font-bold">{doa.doa}</p>
-              <p className="italic text-xl">{doa.ayat}</p>
-              <p className="text-sm text-gray-700">{doa.latin}</p>
-              <p className="text-sm text-gray-600">{doa.artinya}</p>
+              <p className="font-bold">{doa.arab}</p>
+              <p className="text-gray-700">{doa.indo}</p>
+              <p className="font-bold text-sm text-gray-700">judul: {doa.judul}</p>
+              <p className="text-sm text-gray-500">Sumber: {doa.source}</p>
               <p className="text-sm text-gray-500">
-                Grup: {doa.grup} {doa.riwayat && `- ${doa.riwayat}`}
               </p>
             </li>
           ))}
       </ul>
     </div>
+    </MainLayout>
   );
 }
 

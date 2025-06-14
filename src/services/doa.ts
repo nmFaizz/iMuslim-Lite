@@ -1,16 +1,13 @@
 // src/services/doa.ts
 import apiMuslim from '@/lib/apiMuslim';
-import axios from 'axios';
 
 export interface DoaItem {
-  doa: string;
-  ayat: string;
-  latin: string;
-  artinya: string;
-  sumber?: string;
-  riwayat?: string;
-  grup: string;
+  arab : string;
+  indo : string;
+  judul : string;
+  source : string;
 }
+
 
 export interface KategoriDoa {
   id: string;
@@ -20,9 +17,10 @@ export interface KategoriDoa {
 
 export const getDoaBySumber = async (sumber: string) => {
   try {
-    const url = `/v2/doa/sumber/${sumber}`;
-    console.log('Fetching:', url);
-    const response = await axios.get(url);
+    const path = `/doa/sumber/${sumber}`; // Menggunakan sumber yang dipilih
+    console.log('Fetching:', path);
+    const response = await apiMuslim.get(path);
+    console.log('Response :', response);
     return response.data?.data || [];
   } catch (error) {
     console.error('Gagal fetch doa dari sumber:', error);
@@ -44,15 +42,7 @@ export const getAllKategoriDoa = async (): Promise<KategoriDoa[]> => {
     if (Array.isArray(rawArray)) {
       const grouped: Record<string, DoaItem[]> = {};
 
-     rawArray.forEach((item, i) => {
-  const kategori = (item.grup || 'Lainnya').trim(); // ← gunakan item.grup
-  console.log(`📌 [${i}] kategori:`, kategori);
-
-  if (!grouped[kategori]) {
-    grouped[kategori] = [];
-  }
-  grouped[kategori].push(item);
-});
+ ;
 
 
   const kategoriArray: KategoriDoa[] = Object.keys(grouped).map((nama, index) => ({
