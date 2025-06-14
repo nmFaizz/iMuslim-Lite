@@ -1,5 +1,5 @@
-'use client';
-// kerjain disini buat doa page, jadi di response api ntar
+
+// kerjain disini buat doa page, jadi di response api 
 // hasilnya di map return 
 // pake endpoint '/v2/doa/sumber/<nama-sumber>'
 // dapetin list nama sumber nya dari endpoint '/v2/doa/sumber' 
@@ -9,75 +9,100 @@
 
 // src/pages/DoaPage.tsx
 
-import React, { use, useState } from "react";
-import { useQuery } from "@tanstack/react-query";
-import { Doa } from "@/types/doa";
-import { fetchDoaBySumber, fetchSumberList } from "@/services/doa";
-import MainLayout from "@/layouts/MainLayout";
+'use client';
 
-const DoaPage: React.FC = () => {
-  const [selectedSumber, setSelectedSumber] = useState<string>("quran");
+import { useEffect, useState } from 'react';
+import { getDoaBySumber } from '@/services/doa';
 
-  const {
-    data: sumberList = [],
-    isLoading: loadingSumber,
-    error: errorSumber,
-  } = useQuery({
-    queryKey: ["sumber-list"],
-    queryFn: fetchSumberList,
-  });
+const sumberList = [
+  { label: "Quran", value: "quran" },
+  { label: "Hadits", value: "hadits" },
+  { label: "Pilihan", value: "pilihan" },
+  { label: "Harian", value: "harian" },
+  { label: "Ibadah", value: "ibadah" },
+  { label: "Haji", value: "haji" },
+  { label: "Lainnya", value: "lainnya" }
+];
 
-  const {
-    data: doaList = [],
-    isLoading: loadingDoa,
-    error: errorDoa,
-  } = useQuery({
-    queryKey: ["doa", selectedSumber],
-    queryFn: () => fetchDoaBySumber(selectedSumber),
-    enabled: !!selectedSumber, // hanya fetch kalau sudah ada pilihan
-  });
+
+interface DoaItem {
+  doa: string;
+  ayat: string;
+  latin: string;
+  artinya: string;
+  grup: string;
+  riwayat?: string;
+}
+
+export default function DoaPage() {
+  const [selectedSumber, setSelectedSumber] = useState<string>('quran');
+  const [doaList, setDoaList] = useState<DoaItem[]>([]);
+  const [uniqueGrupList, setUniqueGrupList] = useState<string[]>([]);
+  const [selectedGrup, setSelectedGrup] = useState<string>('');
+
+  useEffect(() => {
+    const fetchDoa = async () => {
+      const data = await getDoaBySumber(selectedSumber);
+      setDoaList(data);
+
+      const grupSet = new Set(data.map((doa: DoaItem) => doa.grup));
+      const grupArray = Array.from(grupSet).filter((grup): grup is string => typeof grup === 'string');
+
+      setUniqueGrupList(grupArray);
+      setSelectedGrup(grupArray[0] || '');
+    };
+
+    fetchDoa();
+  }, [selectedSumber]);
 
   return (
-    <div>
-      <h1>Doa Berdasarkan Sumber</h1>
+    <div className="p-4">
+      <h1 className="text-xl font-bold mb-4">Daftar Doa Berdasarkan Sumber & Grup</h1>
 
-      {/* Dropdown untuk pilih sumber */}
-      {loadingSumber ? (
-        <p>Memuat daftar sumber...</p>
-      ) : errorSumber ? (
-        <p>Gagal memuat sumber</p>
-      ) : (
+      <div className="flex flex-col md:flex-row gap-4">
         <select
-          value={selectedSumber}
-          onChange={(e) => setSelectedSumber(e.target.value)}
-        >
-          {sumberList.map((sumber) => (
-            <option key={sumber} value={sumber}>
-              {sumber.toUpperCase()}
-            </option>
-          ))}
+        value={selectedSumber}
+        onChange={(e) => setSelectedSumber(e.target.value)}
+        className="p-2 border rounded"
+>
+        {sumberList.map(({ label, value }) => (
+          <option key={value} value={value}>
+          {label}
+          </option>
+        ))}
         </select>
-      )}
 
-      {/* Tampilkan list doa */}
-      {loadingDoa ? (
-        <p>Memuat doa...</p>
-      ) : errorDoa ? (
-        <p>Gagal memuat doa</p>
-      ) : (
-        <ul>
-          {doaList.map((item) => (
-            <li key={item.id}>
-              <h3>{item.doa}</h3>
-              <p>{item.ayat}</p>
-              <p><i>{item.latin}</i></p>
-              <p><b>{item.artinya}</b></p>
+        {uniqueGrupList.length > 0 && (
+          <select
+            value={selectedGrup}
+            onChange={(e) => setSelectedGrup(e.target.value)}
+            className="p-2 border rounded"
+          >
+            {uniqueGrupList.map((grup, idx) => (
+              <option key={idx} value={grup}>
+                {grup}
+              </option>
+            ))}
+          </select>
+        )}
+      </div>
+
+      <ul className="mt-6 space-y-4">
+        {doaList
+          .filter((doa) => doa.grup === selectedGrup)
+          .map((doa, idx) => (
+            <li key={idx} className="border p-4 rounded shadow">
+              <p className="font-bold">{doa.doa}</p>
+              <p className="italic text-xl">{doa.ayat}</p>
+              <p className="text-sm text-gray-700">{doa.latin}</p>
+              <p className="text-sm text-gray-600">{doa.artinya}</p>
+              <p className="text-sm text-gray-500">
+                Grup: {doa.grup} {doa.riwayat && `- ${doa.riwayat}`}
+              </p>
             </li>
           ))}
-        </ul>
-      )}
+      </ul>
     </div>
   );
-};
+}
 
-export default DoaPage;

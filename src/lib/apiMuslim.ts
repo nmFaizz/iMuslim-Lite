@@ -44,4 +44,18 @@ apiMuslim.interceptors.response.use(
   }
 );
 
+export const getListSumberDoa = async () => {
+  const response = await apiMuslim.get("/v2/doa/sumber");
+  return response.data;
+};
+
+export const getDoaBySumber = async (sumber: string) => {
+  const response = await apiMuslim.get(`/v2/doa/${sumber}`);
+  return {
+    sumber,
+    list: response.data.data // asumsi struktur response ada di response.data.data
+  };
+};
+
+
 export default apiMuslim;
