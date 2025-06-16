@@ -1,10 +1,17 @@
-// src/types/doa.ts
+export type AllDoaResponse = {
+    status: boolean;
+    data: Doa[];
+}
 
-export interface Doa {
-    id: number;
-    doa: string;
-    ayat: string;
-    latin: string;
+export type SingleDoaResponse = {
+    status: boolean;
+    data: Doa;  
+}
+
+export type Doa = {
+    arab: string;
+    indo: string;
+    judul: string;
+    source: string;
     artinya: string;
-  }
-  
+};
