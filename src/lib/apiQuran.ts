@@ -1,6 +1,6 @@
 
 import axios, { AxiosResponse, AxiosError } from 'axios';
-// import { getToken } from '@/lib/cookie';
+// import { getToken } from '@/lib/cookie'
 
 const apiQuran = axios.create({
   baseURL: process.env.NEXT_PUBLIC_QURAN_API_URL,
