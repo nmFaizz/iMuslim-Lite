@@ -44,4 +44,5 @@ apiMuslim.interceptors.response.use(
   }
 );
 
+
 export default apiMuslim;

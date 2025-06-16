@@ -3,6 +3,7 @@ import apiMuslim from "@/lib/apiMuslim";
 import { Doa, SingleDoaResponse } from "@/types/doa";
 import { useQuery } from "@tanstack/react-query"
 import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
 export default function RandomDoa() {
     const { data: doa } = useQuery<Doa>({
@@ -23,9 +24,11 @@ export default function RandomDoa() {
                 <p className="text-muted-foreground">{doa?.indo}</p>
             </div>
 
-            <Button variant="default" className="mt-12">
-                Doa Lainnya
-            </Button>
+            <Link href="/doa">
+                <Button variant="default" className="mt-12">
+                    Doa Lainnya
+                </Button>
+            </Link>
         </div>
     )
 }

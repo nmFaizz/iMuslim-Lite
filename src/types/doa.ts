@@ -13,4 +13,5 @@ export type Doa = {
     indo: string;
     judul: string;
     source: string;
+    artinya: string;
 };
