@@ -48,14 +48,16 @@ export default function JadwalSholat() {
     //     enabled: !!selectedKota, 
     //     refetchInterval: 60000,
     // });
-
+    
     return (
         <div className='my-6 md:my-8'>
             <div className='flex flex-col justify-center items-center'>
                 <p className='text-4xl'>{time} WIB</p>
+              
                 <div>
                     <p>{jadwal?.daerah} - {jadwal?.lokasi}</p>
                 </div>
+        
                 <div className='grid grid-cols-3 md:grid-cols-6 gap-2 md:gap-5 mt-12 w-full'>
                     <div className='text-sm md:text-base border border-muted-foreground/20 rounded-lg p-2 flex flex-col items-center justify-center'>
                         <h3>{jadwal?.jadwal.imsak}</h3>
