@@ -6,7 +6,7 @@ import Link from "next/link"
 import apiQuran from "@/lib/apiQuran"
 import { Button } from "@/components/ui/button"
 import { ArrowRightCircle } from "lucide-react"
-import ListSkeleton from "../ListSkeleton"
+import ListSkeleton from "@/components/ListSkeleton"
 
 export default function ListSurah() {
     const { data, isSuccess, isLoading } = useQuery<Surah[]>({
@@ -22,16 +22,21 @@ export default function ListSurah() {
     }
 
     return (
-        <div className="my-8">
-            {isSuccess && (
-                data?.map((surah) => (
-                    <SurahItem 
-                        key={surah.nomor} 
-                        surah={surah}  
-                    />
-                ))
-            )}
-        </div>
+        <>  
+            <h1 className="text-3xl font-bold mt-12">
+                Daftar Surah
+            </h1>
+            <div className="my-8">
+                {isSuccess && (
+                    data?.map((surah) => (
+                        <SurahItem 
+                            key={surah.nomor} 
+                            surah={surah}  
+                        />
+                    ))
+                )}
+            </div>
+        </>
     )
 }
 
@@ -43,7 +48,7 @@ function SurahItem({
     return (
         <div 
             key={surah.nomor}
-            className="flex md:flex-row flex-col gap-5 border-b border-input py-6 bg-secondary-purple text-black rounded-2xl p-5 mb-5"
+            className="flex md:flex-row flex-col gap-5 py-6 bg-secondary-purple dark:bg-muted/20 text-black rounded-2xl p-5 mb-5"
         >
             <div className="flex items-center justify-center rounded-full w-[50px] h-[50px] bg-white">
                 <p className="text-2xl">{surah.nomor}</p>
@@ -51,8 +56,8 @@ function SurahItem({
 
             <div>
                 <h2 className="text-2xl md:text-4xl font-bold text-primary-purple">{surah.nama}</h2>
-                <p className="font-bold">{surah.namaLatin}</p>
-                <p className="text-ring">{surah.tempatTurun} - {surah.jumlahAyat} Ayahs</p>
+                <p className="font-bold text-foreground">{surah.namaLatin}</p>
+                <p className="text-muted-foreground">{surah.tempatTurun} - {surah.jumlahAyat} Ayahs</p>
 
                 <audio
                     controls

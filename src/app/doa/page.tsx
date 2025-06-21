@@ -30,8 +30,8 @@ export default function DoaPage() {
   return (
     <MainLayout withNavbar containerSize="1200">
       <div className="p-4">
-      <h1 className="text-xl font-bold mb-4">Doa Doa Berdasarkan Sumber</h1>
-      <h2 className="text-lg mb-2">Pilih Sumber Doa:</h2>
+      <h1 className="text-xl font-bold mb-4">Doa berdasarkan kategori</h1>
+      <h2 className="text-lg mb-2">Pilih kategori doa:</h2>
       <div className="flex flex-col md:flex-row gap-4">
         <select
             value={selectedSumber}
@@ -49,15 +49,17 @@ export default function DoaPage() {
       {isLoading && (
         <ListSkeleton className='mt-4 '/>
       )}
+
       <ul className="mt-6 space-y-4">
         {data?.map((doa, idx) => (
-            <li key={idx} className="border p-4 rounded shadow">
-              <p className="font-bold">{doa.arab}</p>
-              <p className="text-gray-700">{doa.indo}</p>
-              <p className="font-bold text-sm text-gray-700">judul: {doa.judul}</p>
-              <p className="text-sm text-gray-500">Sumber: {doa.source}</p>
-              <p className="text-sm text-gray-500">
-              </p>
+            <li key={idx} className="border-b bg-secondary-purple p-8 rounded-2xl space-y-5">
+              <h3 className="font-bold text-xl text-primary-purple">{idx + 1}. {doa.judul}</h3>
+              <p className="font-bold text-3xl text-background">{doa.arab}</p>
+              <div>
+                <p className='text-background'>Artinya:</p>
+                <p className='text-muted-foreground'>{doa.indo}</p>
+              </div>
+              <p className='text-background'>Sumber: {doa.source}</p>
             </li>
           ))}
       </ul>

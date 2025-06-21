@@ -1,4 +1,3 @@
-"use client";
 import { useEffect, useState } from "react";
 
 type TimeProps = {
@@ -12,14 +11,20 @@ export default function useTime({
 
   useEffect(() => {
     const update = () => {
-      setTime(new Date().toLocaleTimeString('id-ID', { timeZone }));
-    };
+    const now = new Date();
 
-    update(); 
+    const pad = (num: number) => String(num).padStart(2, '0');
 
-    const interval = setInterval(update, 1000); 
+    const hours = pad(now.getHours());
+    const minutes = pad(now.getMinutes());
+    const seconds = pad(now.getSeconds());
 
-    return () => clearInterval(interval); 
+    setTime(`${hours}:${minutes}:${seconds}`);
+  };
+
+    update();
+    const interval = setInterval(update, 1000);
+    return () => clearInterval(interval);
   }, [timeZone]);
 
   return { time };
