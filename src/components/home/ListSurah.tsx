@@ -1,5 +1,5 @@
 "use client"
-import React, { useState } from "react"
+import React from "react"
 import { useQuery } from "@tanstack/react-query"
 import { Surah, AllSurahResponse } from "@/types/surah"
 import Link from "next/link"
