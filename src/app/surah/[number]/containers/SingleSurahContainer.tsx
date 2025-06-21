@@ -38,7 +38,7 @@ export default function SingleSurahContainer({
                         <p className="text-2xl">{ayat.teksArab}</p>
                         <p className="italic">{ayat.teksLatin}</p>
                         <p className="text-primary">{ayat.teksIndonesia}</p>
-                        <audio controls src={ayat.audio["01"]}>
+                        <audio controls src={ayat.audio["01"]} preload="none">
                             Your browser does not support the audio element.
                         </audio>
                     </div>
