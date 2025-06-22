@@ -148,7 +148,7 @@ export default function Navbar() {
                         )}
 
                         {/* Desktop right controls */}
-                        <div className="flex items-center md:flex hidden">
+                        <div className="items-center md:flex hidden">
                                 {!session ? (
                                         <Link href="/login">
                                                 <Button variant="default">
