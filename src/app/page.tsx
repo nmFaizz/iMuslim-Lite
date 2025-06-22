@@ -19,9 +19,12 @@ export default function PageHome() {
             Temukan Ketenangan dalam Jadwal Salat, Doa, dan Ayat Al-Qur’an
           </p>
 
-          <Button className="mt-5">
-            Mulai Sekarang
-          </Button>
+          <Link href="/login">
+            <Button className="mt-5">
+              Mulai Sekarang
+            </Button>
+          </Link>
+
         </div>
 
         <div>
