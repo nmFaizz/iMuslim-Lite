@@ -24,7 +24,7 @@ export const cta = [
         description: "Waktu salat, dzikir, dan tilawah sering terlewat di tengah padatnya rutinitas. Kami hadir untuk membantumu tetap terhubung dengan-Nya, kapan pun dan di mana pun kamu berada.",
         button: {
             text: "Lihat Jadwal Salat Hari ini",
-            href: "/jadwal-salat",
+            href: "/jadwal-sholat",
         },
         image: {
             src: "/assets/sajadah.png",
