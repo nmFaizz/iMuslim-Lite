@@ -1,6 +1,5 @@
 import { Button } from "@/components/ui/button";
 import MainLayout from "@/layouts/MainLayout";
-import { Book, Calendar, Hand } from "lucide-react";
 import Image from "next/image";
 import { cta, mainFeatures } from "./constants/home";
 import Link from "next/link";
