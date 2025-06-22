@@ -28,8 +28,6 @@ type SignUpFormValues = {
 }
 
 export default function SignUpPage() {
-    const [selectedKota, setSelectedKota] = useState<string>('1632');
-
     const methods = useForm<SignUpFormValues>({
         mode: 'onBlur',
         defaultValues: {
@@ -176,7 +174,11 @@ export default function SignUpPage() {
                             render={({ field }) => (
                                 <FormItem>
                                     <FormLabel>Pilih Kota</FormLabel>
-                                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                    <Select 
+                                        onValueChange={field.onChange} 
+                                        defaultValue={field.value}
+                                        disabled={isPilihanLoading}
+                                    >
                                         <SelectTrigger>
                                             <SelectValue placeholder="Pilih kota" />
                                         </SelectTrigger>

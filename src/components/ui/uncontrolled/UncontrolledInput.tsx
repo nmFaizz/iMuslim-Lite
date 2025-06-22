@@ -14,12 +14,11 @@ function UncontrolledInput({
   className, 
   id,
   type, 
-  label, 
-  helperText,
   ...props 
 }: UncontrolledInputProps) {
   return (
     <input
+        id={id}
         type={type}
         data-slot="input"
         className={cn(
