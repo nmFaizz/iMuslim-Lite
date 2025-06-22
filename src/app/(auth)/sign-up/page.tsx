@@ -12,37 +12,72 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import MainLayout from "@/layouts/MainLayout";
 import { supabase } from "@/lib/supabase";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
+import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { useState } from "react";
+import apiMuslim from "@/lib/apiMuslim";
+import { Kota, PilihKotaResponse } from "@/types/jadwal";
+import { FormField, FormItem, FormLabel } from "@/components/ui/form";
 
 type SignUpFormValues = {
     username: string;
     email: string;
     password: string;
+    kota: string;
 }
 
 export default function SignUpPage() {
+    const [selectedKota, setSelectedKota] = useState<string>('1632');
+
     const methods = useForm<SignUpFormValues>({
         mode: 'onBlur',
         defaultValues: {
             username: '',
             email: '',
-            password: ''
+            password: '',
+            kota: "",
         }
     })
-    const { handleSubmit } = methods;
+    const { handleSubmit, control } = methods;
     
     const router = useRouter();
 
     const { isPending, mutate } = useMutation<void, Error, SignUpFormValues>({
         mutationFn: async (data: SignUpFormValues) => {
-            const { error } = await supabase.auth.signUp({
+            const { data: authRes, error } = await supabase.auth.signUp({
                 email: data.email,
                 password: data.password,
-            });
+                options: {
+                    data: {
+                        username: data.username,
+                        kota: data.kota,
+                    },
+                },
+            })
 
             if (error) {
-                throw new Error(error.message);
+                toast.error("SignUp Error: " + error.message);
+                return;
+            }
+
+            const user = authRes.user;
+
+            const { error: insertError } = await supabase
+                .from('user')
+                .insert([
+                    {
+                        id: user?.id,             
+                        email: data.email,
+                        username: data.username,
+                        password: data.password,
+                        kota_id: data.kota,
+                    },
+                ]);
+
+            if (insertError) {
+                toast.error("Failed to retrieve user data");
+                return
             }
         },
         onError: (error) => {
@@ -52,6 +87,15 @@ export default function SignUpPage() {
             toast('Sign Up berhasil');
             router.push('/login');
         }
+    })
+
+    const { data: pilihanKota, isLoading: isPilihanLoading } = useQuery<Kota[]>({
+        queryKey: ['pilihan-kota'],
+        queryFn: async () => {
+            const res = await apiMuslim.get<PilihKotaResponse>('/sholat/kota/semua');
+            return res.data.data;
+        },
+        refetchInterval: 60000,
     })
 
     const onSubmit: SubmitHandler<SignUpFormValues> = (data) => {
@@ -97,6 +141,7 @@ export default function SignUpPage() {
                                 }
                             }}
                         />
+
                         <Input 
                             id='email'
                             type='email'
@@ -123,6 +168,34 @@ export default function SignUpPage() {
                                     message: 'Password minimal 6 karakter'
                                 }
                             }}
+                        />
+
+                        <FormField 
+                            control={control}
+                            name='kota'
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>Pilih Kota</FormLabel>
+                                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                        <SelectTrigger>
+                                            <SelectValue placeholder="Pilih kota" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectGroup>
+                                                <SelectLabel>Pilih Kota</SelectLabel>
+                                                {pilihanKota?.map((kota) => (
+                                                    <SelectItem 
+                                                        key={kota.id} 
+                                                        value={kota.id}
+                                                    >
+                                                        {kota.lokasi}
+                                                    </SelectItem>
+                                                ))}
+                                            </SelectGroup>
+                                        </SelectContent>
+                                    </Select>
+                                </FormItem>
+                            )}
                         />
 
                         <Button 

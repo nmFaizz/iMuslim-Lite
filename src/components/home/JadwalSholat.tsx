@@ -16,10 +16,14 @@ import {
 import { SelectGroup } from '@radix-ui/react-select';
 import { useState } from 'react';
 import { getCurrentPrayer, getTimeUntilNext } from '@/lib/jadwalShalat';
+import { supabase } from '@/lib/supabase';
+import { toast } from 'sonner';
+import useSession from '@/hooks/useSession';
 
 export default function JadwalSholat() {
     const { time } = useTime();
     const [selectedKota, setSelectedKota] = useState<string>('1632');
+    const { session } = useSession();
 
     const year = new Date().getFullYear();
     const month = String(new Date().getMonth() + 1).padStart(2, '0');
@@ -53,6 +57,29 @@ export default function JadwalSholat() {
             return res.data.data;
         },
         refetchInterval: 60000,
+    })
+
+    const {  } = useQuery({
+        queryKey: ['user-kota', selectedKota],
+        queryFn: async () => {
+            const { error, data: userResponse } = await supabase.auth.getUser();
+
+            if (error) {
+                toast.error(error.message);
+                return null;
+            }
+
+            const userId = userResponse?.user?.id;
+            const { data: userKota } = await supabase
+                .from("user")
+                .select("kota_id")
+                .eq("id", userId)
+                .single();
+             
+            setSelectedKota(userKota?.kota_id)
+            return userKota?.kota_id
+        },
+        enabled: !!session,
     })
 
     const currentPrayerInfo = jadwal ? getCurrentPrayer(jadwal.jadwal, time || "") : null;
@@ -99,7 +126,7 @@ export default function JadwalSholat() {
                         return (
                             <div 
                                 key={prayer.key}
-                                className={`text-sm md:text-base border rounded-lg p-2 flex flex-col items-center justify-center transition-colors ${
+                                className={`text-sm md:text-base border rounded-lg p-2 flex flex-col items-center justify-center transition-colors text-center ${
                                     isActive 
                                         ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300' 
                                         : isNext
@@ -124,12 +151,11 @@ export default function JadwalSholat() {
             <div className='mt-8'>
                 <Select
                     onValueChange={(value) => {
-                        console.log('Kota terpilih:', value);
                         setSelectedKota(value);
                     }}
                 >
                     <SelectTrigger disabled={isPilihanLoading}>
-                        <SelectValue placeholder="Pilih Jadwal Sholat" />
+                        <SelectValue placeholder="Pilih kota" />
                     </SelectTrigger>
                     <SelectContent>
                         <SelectGroup>
@@ -153,23 +179,23 @@ export default function JadwalSholat() {
                         <h2 className="text-xl font-bold text-foreground">Jadwal Sholat Bulanan</h2>
                     </div>
 
-                    <div className="overflow-x-auto">
+                    <div className="overflow-x-auto max-h-[500px]">
                         <table className="w-full border">
-                            <thead>
+                            <thead className='sticky top-0 bg-background z-20'>
                                 <tr className="border-b border-border">
-                                    <th className="text-left py-4 px-6 font-semibold text-foreground uppercase tracking-wider text-sm">
+                                    <th className="text-left py-4 px-6 font-bold text-foreground uppercase tracking-wider text-sm">
                                         Tanggal
                                     </th>
-                                    <th className="text-left py-4 px-6 font-semibold text-foreground uppercase tracking-wider text-sm">
+                                    <th className="text-left py-4 px-6 font-bold text-foreground uppercase tracking-wider text-sm">
                                         Imsak
                                     </th>
-                                    <th className="text-left py-4 px-6 font-semibold text-foreground uppercase tracking-wider text-sm">
+                                    <th className="text-left py-4 px-6 font-bold text-foreground uppercase tracking-wider text-sm">
                                         Subuh
                                     </th>
-                                    <th className="text-left py-4 px-6 font-semibold text-foreground uppercase tracking-wider text-sm">
+                                    <th className="text-left py-4 px-6 font-bold text-foreground uppercase tracking-wider text-sm">
                                         Dzuhur
                                     </th>
-                                    <th className="text-left py-4 px-6 font-semibold text-foreground uppercase tracking-wider text-sm">
+                                    <th className="text-left py-4 px-6 font-bold text-foreground uppercase tracking-wider text-sm">
                                         Ashar
                                     </th>
                                     <th className="text-left py-4 px-6 font-semibold text-foreground uppercase tracking-wider text-sm">

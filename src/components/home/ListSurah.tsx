@@ -5,16 +5,40 @@ import { Surah, AllSurahResponse } from "@/types/surah"
 import Link from "next/link"
 import apiQuran from "@/lib/apiQuran"
 import { Button } from "@/components/ui/button"
-import { ArrowRightCircle } from "lucide-react"
+import { ArrowRightCircle, Bookmark } from "lucide-react"
 import ListSkeleton from "@/components/ListSkeleton"
+import { supabase } from "@/lib/supabase"
+import { toast } from "sonner"
+import { Session } from "@supabase/supabase-js"
+import { UncontrolledInput } from "@/components/ui/uncontrolled/UncontrolledInput"
 
 export default function ListSurah() {
-    const { data, isSuccess, isLoading } = useQuery<Surah[]>({
+    const [listSurah, setListSurah] = React.useState<Surah[]>([])
+    const [searchSurah, setSearchSurah] = React.useState<string>('')
+    const [searchedListSurah, setSearchedListSurah] = React.useState<Surah[]>([])
+
+    const { isSuccess, isLoading } = useQuery<Surah[]>({
         queryKey: ['list-surah'],
         queryFn: async () => {
             const res = await apiQuran.get<AllSurahResponse>("/v2/surat")
+            setListSurah(res.data.data)
+            setSearchedListSurah(res.data.data)
             return res.data.data
         }
+    })
+
+    const { data: session } = useQuery({
+        queryKey: ['session'],
+        queryFn: async () => {
+            const { error, data } = await supabase.auth.getSession()
+            
+            if (error) {
+                toast.error(error.message)
+                return;
+            }
+
+            return data.session
+        },
     })
 
     if (isLoading) {
@@ -26,12 +50,34 @@ export default function ListSurah() {
             <h1 className="text-3xl font-bold mt-12">
                 Daftar Surah
             </h1>
+            
+            <UncontrolledInput 
+                id="search-surah"
+                placeholder="Cari Surah..."
+                className="mt-4 mb-8"
+                value={searchSurah}
+                onChange={(e) => {
+                    setSearchSurah(e.target.value)
+
+                    if (e.target.value === '') {
+                        setSearchedListSurah(listSurah)
+                        return;
+                    }
+
+                    const filteredSurah = listSurah.filter(surah => 
+                        surah.namaLatin.toLowerCase().includes(e.target.value.toLowerCase())
+                    )
+                    setSearchedListSurah(filteredSurah)
+                }}
+            />
+
             <div className="my-8">
                 {isSuccess && (
-                    data?.map((surah) => (
+                    searchedListSurah?.map((surah) => (
                         <SurahItem 
                             key={surah.nomor} 
                             surah={surah}  
+                            session={session}
                         />
                     ))
                 )}
@@ -42,8 +88,10 @@ export default function ListSurah() {
 
 function SurahItem({
     surah,
+    session = null
 }: {
     surah: Surah;
+    session?: Session | null;
 }) {
     return (
         <div 
@@ -65,14 +113,27 @@ function SurahItem({
                     className="mt-2"
                     preload="none"
                 />
-                <Link href={`/surah/${surah.nomor}`}>
-                    <Button className="mt-8">
-                        <span className="flex items-center gap-2">
-                            Baca Surah
-                            <ArrowRightCircle className="w-5 h-5" />
-                        </span>
-                    </Button>
-                </Link>
+
+                <div>
+                    <Link href={`/surah/${surah.nomor}`}>
+                        <Button className="mt-8">
+                            <span className="flex items-center gap-2">
+                                Baca Surah
+                                <ArrowRightCircle className="w-5 h-5" />
+                            </span>
+                        </Button>
+                    </Link>
+
+                    {session && (
+                        <Button 
+                            variant="ghost" 
+                            className="ml-3 mt-2"
+                        >
+                            Bookmark
+                            <Bookmark />
+                        </Button>
+                    )}
+                </div>
             </div>
         </div>
     )
