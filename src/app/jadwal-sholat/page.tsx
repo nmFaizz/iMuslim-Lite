@@ -1,4 +1,4 @@
-import JadwalSholat from "@/components/home/JadwalSholat"
+import JadwalSholat from "@/app/jadwal-sholat/components/JadwalSholat"
 import MainLayout from "@/layouts/MainLayout"
 
 export default function JadwalSholatPage() {

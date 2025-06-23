@@ -1,4 +1,4 @@
-import ListSurah from "@/components/home/ListSurah"
+import ListSurah from "@/app/surah/components/ListSurah"
 import MainLayout from "@/layouts/MainLayout"
 
 export default function SurahPage() {

@@ -11,18 +11,22 @@ import { supabase } from "@/lib/supabase"
 import { toast } from "sonner"
 import { Session } from "@supabase/supabase-js"
 import { UncontrolledInput } from "@/components/ui/uncontrolled/UncontrolledInput"
+import { useDebounce } from "@/app/surah/hooks/useDebounce"
+import { useFilteredSurah } from "@/app/surah/hooks/useFilteredSurah"
 
 export default function ListSurah() {
     const [listSurah, setListSurah] = React.useState<Surah[]>([])
     const [searchSurah, setSearchSurah] = React.useState<string>('')
-    const [searchedListSurah, setSearchedListSurah] = React.useState<Surah[]>([])
+    
+    const debouncedSearchTerm = useDebounce(searchSurah, 300)
+    
+    const filteredSurah = useFilteredSurah(listSurah, debouncedSearchTerm)
 
     const { isSuccess, isLoading } = useQuery<Surah[]>({
         queryKey: ['list-surah'],
         queryFn: async () => {
             const res = await apiQuran.get<AllSurahResponse>("/v2/surat")
             setListSurah(res.data.data)
-            setSearchedListSurah(res.data.data)
             return res.data.data
         }
     })
@@ -34,12 +38,16 @@ export default function ListSurah() {
             
             if (error) {
                 toast.error(error.message)
-                return;
+                return null
             }
 
             return data.session
         },
     })
+
+    const handleSearchChange = React.useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+        setSearchSurah(e.target.value)
+    }, [])
 
     if (isLoading) {
         return <ListSkeleton className="my-8" />
@@ -53,40 +61,42 @@ export default function ListSurah() {
             
             <UncontrolledInput 
                 id="search-surah"
-                placeholder="Cari Surah..."
+                placeholder="Cari Surah (nama latin, arab, atau arti)..."
                 className="mt-4 mb-8"
                 value={searchSurah}
-                onChange={(e) => {
-                    setSearchSurah(e.target.value)
-
-                    if (e.target.value === '') {
-                        setSearchedListSurah(listSurah)
-                        return;
-                    }
-
-                    const filteredSurah = listSurah.filter(surah => 
-                        surah.namaLatin.toLowerCase().includes(e.target.value.toLowerCase())
-                    )
-                    setSearchedListSurah(filteredSurah)
-                }}
+                onChange={handleSearchChange}
             />
+
+            {debouncedSearchTerm && (
+                <p className="text-sm text-muted-foreground mb-4">
+                    Menampilkan {filteredSurah.length} surah dari {listSurah.length} total surah
+                </p>
+            )}
 
             <div className="my-8">
                 {isSuccess && (
-                    searchedListSurah?.map((surah) => (
-                        <SurahItem 
-                            key={surah.nomor} 
-                            surah={surah}  
-                            session={session}
-                        />
-                    ))
+                    filteredSurah.length > 0 ? (
+                        filteredSurah.map((surah) => (
+                            <SurahItem 
+                                key={surah.nomor} 
+                                surah={surah}  
+                                session={session}
+                            />
+                        ))
+                    ) : debouncedSearchTerm ? (
+                        <div className="text-center py-8">
+                            <p className="text-muted-foreground">
+                                Tidak ada surah yang ditemukan untuk "{debouncedSearchTerm}"
+                            </p>
+                        </div>
+                    ) : null
                 )}
             </div>
         </>
     )
 }
 
-function SurahItem({
+const SurahItem = React.memo(function SurahItem({
     surah,
     session = null
 }: {
@@ -97,7 +107,10 @@ function SurahItem({
         mutationFn: async (data: SavedSurah) => {
             const res = await fetch("/api/save_surah", {
                 method: "POST",
-                body: JSON.stringify(data)
+                body: JSON.stringify(data),
+                headers: {
+                    'Content-Type': 'application/json',
+                }
             })  
 
             if (!res.ok) {
@@ -113,9 +126,11 @@ function SurahItem({
         }
     })
 
-    const onSubmit = () => {
+    const onSubmit = React.useCallback(() => {
+        if (!session?.user.id) return
+        
         const payload = {
-            id_user: session?.user.id || '',
+            id_user: session.user.id,
             id_surah: surah.nomor,
             arab: surah.nama,
             description: surah.deskripsi,
@@ -125,18 +140,17 @@ function SurahItem({
         }
 
         mutate(payload)
-    }
+    }, [session?.user.id, surah, mutate])
 
     return (
         <div 
-            key={surah.nomor}
             className="flex md:flex-row flex-col gap-5 py-6 bg-secondary-purple dark:bg-muted/20 text-black rounded-2xl p-5 mb-5"
         >
             <div className="flex items-center justify-center rounded-full w-[50px] h-[50px] bg-white">
                 <p className="text-2xl">{surah.nomor}</p>
             </div>
 
-            <div>
+            <div className="flex-1">
                 <h2 className="text-2xl md:text-4xl font-bold text-primary-purple">{surah.nama}</h2>
                 <p className="font-bold text-foreground">{surah.namaLatin}</p>
                 <p className="text-muted-foreground">{surah.tempatTurun} - {surah.jumlahAyat} Ayahs</p>
@@ -148,9 +162,9 @@ function SurahItem({
                     preload="none"
                 />
 
-                <div>
+                <div className="flex flex-wrap gap-2 mt-4">
                     <Link href={`/surah/${surah.nomor}`}>
-                        <Button className="mt-8">
+                        <Button>
                             <span className="flex items-center gap-2">
                                 Baca Surah
                                 <ArrowRightCircle className="w-5 h-5" />
@@ -161,19 +175,20 @@ function SurahItem({
                     {session && (
                         <Button 
                             variant="ghost" 
-                            className="ml-3 mt-2"
                             onClick={onSubmit}
                             disabled={isPending}
                         >
-                            Bookmark
-                            <Bookmark />
-                            {isPending && (
-                                <Loader2Icon className="animate-spin" />
-                            )}
+                            <span className="flex items-center gap-2">
+                                Bookmark
+                                <Bookmark className="w-4 h-4" />
+                                {isPending && (
+                                    <Loader2Icon className="w-4 h-4 animate-spin" />
+                                )}
+                            </span>
                         </Button>
                     )}
                 </div>
             </div>
         </div>
     )
-}
+})
