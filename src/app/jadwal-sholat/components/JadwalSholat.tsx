@@ -79,7 +79,7 @@ export default function JadwalSholat() {
             setSelectedKota(userKota?.kota_id)
             return userKota?.kota_id
         },
-        enabled: !!session,
+        enabled: !!session?.access_token,
     })
 
     const currentPrayerInfo = jadwal ? getCurrentPrayer(jadwal.jadwal, time || "") : null;
