@@ -86,7 +86,7 @@ export default function ListSurah() {
                     ) : debouncedSearchTerm ? (
                         <div className="text-center py-8">
                             <p className="text-muted-foreground">
-                                Tidak ada surah yang ditemukan untuk "{debouncedSearchTerm}"
+                                Tidak ada surah yang ditemukan untuk &quot;{debouncedSearchTerm}&quot;
                             </p>
                         </div>
                     ) : null
