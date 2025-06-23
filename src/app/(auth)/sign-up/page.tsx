@@ -170,7 +170,10 @@ export default function SignUpPage() {
                         <FormField 
                             control={control}
                             name='kota'
-                            render={({ field }) => (
+                            rules={{
+                                required: 'Kota wajib dipilih'
+                            }}
+                            render={({ field, fieldState }) => (
                                 <FormItem>
                                     <FormLabel>Pilih Kota</FormLabel>
                                     <Select 
@@ -195,6 +198,9 @@ export default function SignUpPage() {
                                             </SelectGroup>
                                         </SelectContent>
                                     </Select>
+                                    {fieldState.error && (
+                                        <p className="text-red-500 text-xs mt-1">{fieldState.error.message}</p>
+                                    )}
                                 </FormItem>
                             )}
                         />
