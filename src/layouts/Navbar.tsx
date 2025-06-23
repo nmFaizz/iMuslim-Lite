@@ -144,7 +144,7 @@ export default function Navbar() {
                                                                         <Sun className="opacity-60" />
                                                                         <Moon className="absolute opacity-60" />
                                                                 </Button>
-                                                                <Link href="/saved-surah">
+                                                                <Link href="/surah/saved">
                                                                         <Button 
                                                                             variant="outline"
                                                                             size="icon"
@@ -169,7 +169,7 @@ export default function Navbar() {
                                 ) : (
                                     <>
                                         <p className="font-bold">Hello, {session.user.username}</p>
-                                        <Link href="/saved-surah">
+                                        <Link href="/surah/saved">
                                             <Button 
                                                 variant="ghost"
                                                 size="icon"

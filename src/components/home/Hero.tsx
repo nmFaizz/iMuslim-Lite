@@ -10,7 +10,7 @@ export default function Hero() {
     return (
         <section className="h-[80vh] flex-col md:flex-row flex items-center justify-between gap-8">
             <div className="max-w-[420px]">
-                {session ? (
+                {session?.access_token ? (
                     <h1 className="text-5xl font-semibold">
                         Selamat Datang <span className="text-primary-purple">{session.user.username}</span>
                     </h1>

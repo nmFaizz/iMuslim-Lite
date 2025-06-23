@@ -61,7 +61,7 @@ export default function ListSurah() {
             
             <UncontrolledInput 
                 id="search-surah"
-                placeholder="Cari Surah (nama latin, arab, atau arti)..."
+                placeholder="Cari Surah (nama latin)..."
                 className="mt-4 mb-8"
                 value={searchSurah}
                 onChange={handleSearchChange}
