@@ -36,12 +36,12 @@ export async function GET(request: NextRequest) {
     });
   }
 
-  if (!savedSurah || savedSurah.length === 0) {
-    return new Response(JSON.stringify({ error: "No saved surah found" }), {
-      status: 404,
-      headers: { "Content-Type": "application/json" }
+if (!savedSurah || savedSurah.length === 0) {
+    return new Response(JSON.stringify([]), {
+        status: 200,
+        headers: { "Content-Type": "application/json" }
     });
-  }
+}
 
   return new Response(JSON.stringify(savedSurah), {
     status: 200,
