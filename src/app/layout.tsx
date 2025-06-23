@@ -4,6 +4,7 @@ import { Inter } from "next/font/google";
 import ReactQueryProvider from "@/providers/ReactQueryProvider";
 import { ThemeProvider } from "@/providers/ThemeProvider";
 import { Toaster } from "sonner";
+import { siteConfig } from "@/constants/config";
 import "./globals.css";
 
 const inter = Inter({
@@ -12,8 +13,32 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "iMuslim - Your Islamic Companion",
-  description: "iMuslim is your comprehensive Islamic companion, offering prayer times, Quran readings, and more.",
+  title: {
+    default: siteConfig.name,
+    template: `%s | ${siteConfig.name}`,
+  },
+  description: siteConfig.description,
+  metadataBase: new URL(siteConfig.url),
+  keywords: [
+    "iMuslim",
+    "Islamic app",
+    "Quran",
+    "Prayer times",
+    "Islamic calendar",
+    "Doa",
+    "Hadith",
+    "Islamic education",
+    "Muslim community",
+    "Aplikasi Islami",
+    "Al-Qur'an",
+    "Jadwal Sholat",
+    "Kalender Islam",
+    "Doa-doa",
+    "Hadis",
+    "Pendidikan Islam",
+    "Komunitas Muslim",
+    "Muslim Indonesia"
+  ]
 };
 
 export default function RootLayout({
