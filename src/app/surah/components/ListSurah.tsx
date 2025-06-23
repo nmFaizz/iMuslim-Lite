@@ -13,10 +13,12 @@ import { Session } from "@supabase/supabase-js"
 import { UncontrolledInput } from "@/components/ui/uncontrolled/UncontrolledInput"
 import { useDebounce } from "@/app/surah/hooks/useDebounce"
 import { useFilteredSurah } from "@/app/surah/hooks/useFilteredSurah"
+import useSession from "@/hooks/useSession"
 
 export default function ListSurah() {
     const [listSurah, setListSurah] = React.useState<Surah[]>([])
     const [searchSurah, setSearchSurah] = React.useState<string>('')
+    const { session } = useSession()
     
     const debouncedSearchTerm = useDebounce(searchSurah, 300)
     
@@ -29,20 +31,6 @@ export default function ListSurah() {
             setListSurah(res.data.data)
             return res.data.data
         }
-    })
-
-    const { data: session } = useQuery({
-        queryKey: ['session'],
-        queryFn: async () => {
-            const { error, data } = await supabase.auth.getSession()
-            
-            if (error) {
-                toast.error(error.message)
-                return null
-            }
-
-            return data.session
-        },
     })
 
     const handleSearchChange = React.useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
@@ -80,7 +68,8 @@ export default function ListSurah() {
                             <SurahItem 
                                 key={surah.nomor} 
                                 surah={surah}  
-                                session={session}
+                                userId={session?.user.id}
+                                accessToken={session?.access_token}
                             />
                         ))
                     ) : debouncedSearchTerm ? (
@@ -98,10 +87,12 @@ export default function ListSurah() {
 
 const SurahItem = React.memo(function SurahItem({
     surah,
-    session = null
+    userId = null,
+    accessToken = null
 }: {
     surah: Surah;
-    session?: Session | null;
+    userId?: string | null;
+    accessToken?: string | null;
 }) {
     const { mutate, isPending } = useMutation({
         mutationFn: async (data: SavedSurah) => {
@@ -127,10 +118,10 @@ const SurahItem = React.memo(function SurahItem({
     })
 
     const onSubmit = React.useCallback(() => {
-        if (!session?.user.id) return
+        if (!userId) return
         
         const payload = {
-            id_user: session.user.id,
+            id_user: userId,
             id_surah: surah.nomor,
             arab: surah.nama,
             description: surah.deskripsi,
@@ -140,7 +131,7 @@ const SurahItem = React.memo(function SurahItem({
         }
 
         mutate(payload)
-    }, [session?.user.id, surah, mutate])
+    }, [userId, surah, mutate])
 
     return (
         <div 
@@ -172,7 +163,7 @@ const SurahItem = React.memo(function SurahItem({
                         </Button>
                     </Link>
 
-                    {session?.access_token && (
+                    {accessToken && (
                         <Button 
                             variant="ghost" 
                             onClick={onSubmit}
