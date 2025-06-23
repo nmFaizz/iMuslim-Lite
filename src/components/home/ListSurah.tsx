@@ -1,11 +1,11 @@
 "use client"
 import React from "react"
-import { useQuery } from "@tanstack/react-query"
-import { Surah, AllSurahResponse } from "@/types/surah"
+import { useMutation, useQuery } from "@tanstack/react-query"
+import { Surah, AllSurahResponse, SavedSurah } from "@/types/surah"
 import Link from "next/link"
 import apiQuran from "@/lib/apiQuran"
 import { Button } from "@/components/ui/button"
-import { ArrowRightCircle, Bookmark } from "lucide-react"
+import { ArrowRightCircle, Bookmark, Loader2Icon } from "lucide-react"
 import ListSkeleton from "@/components/ListSkeleton"
 import { supabase } from "@/lib/supabase"
 import { toast } from "sonner"
@@ -93,6 +93,40 @@ function SurahItem({
     surah: Surah;
     session?: Session | null;
 }) {
+    const { mutate, isPending } = useMutation({
+        mutationFn: async (data: SavedSurah) => {
+            const res = await fetch("/api/save_surah", {
+                method: "POST",
+                body: JSON.stringify(data)
+            })  
+
+            if (!res.ok) {
+                const errorData = await res.json()
+                throw new Error(errorData.error || "Failed to save surah")
+            }
+        },
+        onSuccess: () => {
+            toast.success("Surah berhasil disimpan")
+        },
+        onError: (error) => {
+            toast.error(error.message)
+        }
+    })
+
+    const onSubmit = () => {
+        const payload = {
+            id_user: session?.user.id || '',
+            id_surah: surah.nomor,
+            arab: surah.nama,
+            description: surah.deskripsi,
+            indo: surah.arti,
+            audio: surah.audioFull["01"],
+            latin: surah.namaLatin,
+        }
+
+        mutate(payload)
+    }
+
     return (
         <div 
             key={surah.nomor}
@@ -128,9 +162,14 @@ function SurahItem({
                         <Button 
                             variant="ghost" 
                             className="ml-3 mt-2"
+                            onClick={onSubmit}
+                            disabled={isPending}
                         >
                             Bookmark
                             <Bookmark />
+                            {isPending && (
+                                <Loader2Icon className="animate-spin" />
+                            )}
                         </Button>
                     )}
                 </div>

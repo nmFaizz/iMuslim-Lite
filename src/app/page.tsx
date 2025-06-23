@@ -3,6 +3,7 @@ import MainLayout from "@/layouts/MainLayout";
 import Image from "next/image";
 import { cta, mainFeatures } from "./constants/home";
 import Link from "next/link";
+import Hero from "@/components/home/Hero";
 
 export default function PageHome() {
   return (
@@ -10,32 +11,7 @@ export default function PageHome() {
       containerSize="1200"
       withNavbar
     >
-      <section className="h-[80vh] flex-col md:flex-row flex items-center justify-between gap-8">
-        <div className="max-w-[420px]">
-          <h1 className="text-5xl font-semibold">
-            Heningkan Pikiran <span className="text-primary-purple">Hidupkan Iman</span>
-          </h1>
-          <p className="mt-3">
-            Temukan Ketenangan dalam Jadwal Salat, Doa, dan Ayat Al-Qur’an
-          </p>
-
-          <Link href="/login">
-            <Button className="mt-5">
-              Mulai Sekarang
-            </Button>
-          </Link>
-
-        </div>
-
-        <div>
-          <Image 
-            src="/assets/mosque.png"
-            alt="Home Hero Image"
-            width={713}
-            height={517}
-          />
-        </div>
-      </section>
+      <Hero />
 
       <section className="grid grid-cols-1 md:grid-cols-3 mt-12 gap-5">
           {mainFeatures.map((feature, index) => (

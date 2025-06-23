@@ -58,3 +58,13 @@ export type Ayat = {
         [key: string]: string;
     };
 }
+
+export type SavedSurah = {
+    id_user: string,
+    id_surah: number,
+    arab: string,
+    description: string,
+    indo: string,
+    audio: string,
+    latin: string,
+}

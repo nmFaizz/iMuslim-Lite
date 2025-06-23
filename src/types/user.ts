@@ -1,4 +1,6 @@
-export type user = {
+export type User = {
+    id: string;
     email: string;
-    password: string;
+    username: string;
+    kota_id: string;
 }
