@@ -7,6 +7,11 @@ export default function useSession() {
         queryKey: ['session'],
         queryFn: async () => {
             const { data: sessionData } = await supabase.auth.getSession()
+
+            if (!sessionData.session) {
+                return null
+            }
+
             const { data: userData } = await supabase
                 .from('user')
                 .select('id, email, username, kota_id')
