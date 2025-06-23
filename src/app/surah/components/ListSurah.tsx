@@ -172,7 +172,7 @@ const SurahItem = React.memo(function SurahItem({
                         </Button>
                     </Link>
 
-                    {session && (
+                    {session?.access_token && (
                         <Button 
                             variant="ghost" 
                             onClick={onSubmit}
